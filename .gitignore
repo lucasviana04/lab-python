@@ -1,0 +1,5 @@
+smartbite.db
+smartbite.log
+__pycache__/
+venv/
+.env
