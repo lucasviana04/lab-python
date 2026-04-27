@@ -1,9 +1,13 @@
 from fastapi.testclient import TestClient
 from app.main import app
+from app import models
+from app.database import engine
 
+
+models.Base.metadata.create_all(bind=engine)
 client = TestClient(app)
 
-# Teste 1: Verificar se a documentação está online
+
 def test_read_docs():
     response = client.get("/docs")
     assert response.status_code == 200
