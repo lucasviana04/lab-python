@@ -16,7 +16,7 @@ class AIService:
         # Configura o Gemini
         genai.configure(api_key=api_key)
         # Usamos o modelo flash que é mais rápido para testes
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
 
     def get_recipe_suggestion(self, ingredients: list):
         """

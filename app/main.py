@@ -24,8 +24,8 @@ app = FastAPI(title="SmartBite API")
 # 3. Inicialização do Serviço de IA (Gemini)
 ai = ai_service.AIService()
 
-# 4. Configuração de CORS
-# Permite que o seu Frontend (index.html) acesse esta API com segurança
+models.Base.metadata.create_all(bind=database.engine)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

@@ -1,5 +1,4 @@
-smartbite.db
-smartbite.log
-__pycache__/
-venv/
 .env
+venv/
+__pycache__/
+*.db
