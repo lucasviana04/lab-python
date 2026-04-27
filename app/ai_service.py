@@ -1,25 +1,37 @@
 import os
-from dotenv import load_dotenv
 import google.generativeai as genai
+from dotenv import load_dotenv
 
+# Carrega a chave do arquivo .env
 load_dotenv()
 
 class AIService:
     def __init__(self):
+        # Busca a chave no seu Mac (arquivo .env)
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            raise ValueError("API Key not found in .env file")
-            
-        genai.configure(api_key=api_key)
+            print("❌ ERRO: GEMINI_API_KEY não encontrada no arquivo .env")
+            return
         
+        # Configura o Gemini
+        genai.configure(api_key=api_key)
+        # Usamos o modelo flash que é mais rápido para testes
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
 
-        self.model = genai.GenerativeModel(model_name='models/gemini-2.5-flash')
-    async def suggest_recipe(self, ingredients: list):
-        prompt = (
-            f"I have these ingredients: {', '.join(ingredients)}. "
-            "Suggest a quick, healthy, and easy recipe for a college student. "
-            "Please respond in English."
-        )
-        # Remember the 'await' and '_async' for FastAPI performance
-        response = await self.model.generate_content_async(prompt)
-        return response.text
+    def get_recipe_suggestion(self, ingredients: list):
+        """
+        Esta é a função que o main.py está procurando!
+        """
+        try:
+            # Criamos uma instrução clara para a IA
+            prompt = (
+                f"I am a student using the SmartBite app. "
+                f"I have these ingredients: {', '.join(ingredients)}. "
+                f"Suggest a simple, healthy recipe I can make. "
+                f"Keep it concise and professional."
+            )
+            
+            response = self.model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            return f"Error generating recipe: {str(e)}"

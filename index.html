@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBite - AI Pantry Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍎 SmartBite</h1>
+            <p>Your intelligent pantry assistant</p>
+        </header>
+
+        <main>
+            <section class="card add-item">
+                <h3>Add New Ingredient</h3>
+                <form id="ingredient-form">
+                    <input type="text" id="name" placeholder="Ingredient Name (e.g. Chicken)" required>
+                    <input type="text" id="category" placeholder="Category (e.g. Protein)" required>
+                    <button type="submit">Add to Pantry</button>
+                </form>
+            </section>
+
+            <section class="card pantry-list">
+                <h3>My Pantry</h3>
+                <ul id="pantry-items">
+                    </ul>
+            </section>
+
+            <section class="card ai-recipe">
+                <h3>AI Recipe Suggestion</h3>
+                <button id="get-recipe-btn" class="btn-ai">✨ Generate Recipe with Gemini</button>
+                <div id="recipe-display" class="recipe-box">
+                    Click the button to get a recipe based on your pantry!
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
