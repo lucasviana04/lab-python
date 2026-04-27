@@ -1,5 +1,6 @@
 const API_URL = "http://127.0.0.1:8000";
 
+// 1. Carregar a despensa ao abrir a página
 document.addEventListener("DOMContentLoaded", fetchPantry);
 
 async function fetchPantry() {
@@ -21,16 +22,14 @@ async function fetchPantry() {
     }
 }
 
+// 2. Adicionar ingrediente
 document.getElementById("ingredient-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("name").value;
     const category = document.getElementById("category").value;
-    
-    // Gera a data de hoje no formato YYYY-MM-DD que o seu banco pede
     const today = new Date().toISOString().split('T')[0];
 
     try {
-        // 1. Tenta criar o ingrediente
         let ingRes = await fetch(`${API_URL}/ingredients/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -39,7 +38,6 @@ document.getElementById("ingredient-form").addEventListener("submit", async (e) 
 
         let ingredient;
         if (ingRes.status === 400 || ingRes.status === 422) {
-            // Se já existe ou deu erro de validação, buscamos o ID na lista existente
             const allIng = await fetch(`${API_URL}/ingredients/`);
             const data = await allIng.json();
             ingredient = data.find(i => i.name.toLowerCase() === name.toLowerCase());
@@ -47,52 +45,50 @@ document.getElementById("ingredient-form").addEventListener("submit", async (e) 
             ingredient = await ingRes.json();
         }
 
-        // 2. Adiciona à despensa com a DATA obrigatória
         if (ingredient && ingredient.id) {
-            const pantryRes = await fetch(`${API_URL}/pantry/`, {
+            await fetch(`${API_URL}/pantry/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     ingredient_id: ingredient.id, 
                     quantity: "1 unit",
-                    expiry_date: today // O CAMPO QUE FALTAVA!
+                    expiry_date: today
                 })
             });
-
-            if (pantryRes.ok) {
-                document.getElementById("ingredient-form").reset();
-                fetchPantry();
-            } else {
-                const err = await pantryRes.json();
-                console.error("Pantry Error:", err);
-                alert("Erro ao salvar na despensa. Verifique o console.");
-            }
+            document.getElementById("ingredient-form").reset();
+            fetchPantry();
         }
     } catch (error) {
-        console.error("System Error:", error);
+        console.error("Error adding item:", error);
     }
 });
 
-// IA: Gerar Receita
+// 3. GERAR RECEITA (O botão que estava mudo)
 document.getElementById("get-recipe-btn").addEventListener("click", async () => {
+    // Alerta de teste para confirmar que o JS está vivo
+    console.log("Botão clicado!");
+    
     const display = document.getElementById("recipe-display");
-    display.innerText = "Gemini is thinking... 🍳";
+    display.innerText = "Gemini is cooking up an idea... 🍳";
     
     try {
         const response = await fetch(`${API_URL}/ai/suggest-recipe`);
         const data = await response.json();
+        
         if (response.ok) {
             display.innerText = data.suggestion;
         } else {
-            display.innerText = "Add items to your pantry first!";
+            display.innerText = "Error: " + (data.detail || "Check your pantry.");
         }
     } catch (error) {
-        display.innerText = "AI Service unavailable.";
+        console.error("AI Error:", error);
+        display.innerText = "AI Service unavailable. Check if Backend is running.";
     }
 });
 
+// 4. Deletar item
 async function deleteItem(id) {
-    if (confirm("Remove?")) {
+    if (confirm("Remove this item?")) {
         await fetch(`${API_URL}/pantry/${id}`, { method: "DELETE" });
         fetchPantry();
     }
